@@ -80,8 +80,8 @@ class TestGithubOrgClient(unittest.TestCase):
 
 @parameterized_class(('org_payload', 'repos_payload',
                       'expected_repos', 'apache2_repos'), [
-                          (org_payload, repos_payload, expected_repos,
-                           apache2_repos, TEST_PAYLOAD[0]),
+                          (org_payload, repos_payload,
+                           expected_repos, apache2_repos),
                       ])
 class TestIntegrationGithubOrgClient(unittest.TestCase):
     """Implement Intergration tests"""
@@ -110,3 +110,19 @@ class TestIntegrationGithubOrgClient(unittest.TestCase):
     def tearDownClass(cls):
         """Stop the patcher"""
         cls.get_patcher.stop()
+
+    def test_public_repos(self):
+        """Test public repos"""
+        client = GithubOrgClient("google")
+        repos = client.public_repos()
+
+        self.assertEqual(repos, self.expected_repos)
+
+    def test_public_repos_with_license(self):
+        """Test whether repos with a  particular license
+            are returned
+        """
+        client = GithubOrgClient("google")
+        repos = client.public_repos(license="apache-2.0")
+
+        self.assertEqual(repos, self.apache2_repos)
